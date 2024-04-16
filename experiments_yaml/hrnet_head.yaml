@@ -1,0 +1,110 @@
+AUTO_RESUME: false
+CUDNN:
+  BENCHMARK: true
+  DETERMINISTIC: false
+  ENABLED: true
+DATA_DIR: ''
+GPUS: (0,1,2,3)
+OUTPUT_DIR: 'output'
+LOG_DIR: 'logs'
+WORKERS: 10
+PRINT_FREQ: 30
+
+DATASET:
+  COLOR_RGB: true
+  DATASET: 'Mebow_Dataset'
+  DATA_FORMAT: jpg
+  FLIP: true
+  TRAIN_ROOT: '/home/zhaoruisi/datasets'
+  VAL_ROOT: '/home/zhaoruisi/datasets'
+  ROT_FACTOR: 45
+  SCALE_FACTOR: 0.35
+  WINDOW_SIZE: 9
+  USE_RENDER: true
+  MIX_RATIO: 1.0
+
+MODEL:
+  PRETRAINED: 'pretrained_models/pretrained_hrnet.pth'
+  IMAGE_SIZE:
+  - 192
+  - 256
+  NAME: 'hrnet_head'
+  NUM_JOINTS: 17
+  USE_FEATUREMAP: true
+  
+  EXTRA:
+    PRETRAINED_LAYERS:
+    - 'conv1'
+    - 'bn1'
+    - 'conv2'
+    - 'bn2'
+    - 'layer1'
+    - 'transition1'
+    - 'stage2'
+    - 'transition2'
+    - 'stage3'
+    - 'transition3'
+    - 'stage4'
+    FINAL_CONV_KERNEL: 1
+    STAGE2:
+      NUM_MODULES: 1
+      NUM_BRANCHES: 2
+      BLOCK: BASIC
+      NUM_BLOCKS:
+      - 4
+      - 4
+      NUM_CHANNELS:
+      - 32
+      - 64
+      FUSE_METHOD: SUM
+    STAGE3:
+      NUM_MODULES: 4
+      NUM_BRANCHES: 3
+      BLOCK: BASIC
+      NUM_BLOCKS:
+      - 4
+      - 4
+      - 4
+      NUM_CHANNELS:
+      - 32
+      - 64
+      - 128
+      FUSE_METHOD: SUM
+    STAGE4:
+      NUM_MODULES: 3
+      NUM_BRANCHES: 4
+      BLOCK: BASIC
+      NUM_BLOCKS:
+      - 4
+      - 4
+      - 4
+      - 4
+      NUM_CHANNELS:
+      - 32
+      - 64
+      - 128
+      - 256
+      FUSE_METHOD: SUM
+LOSS:
+  USE_ONLY_HOE: true
+TRAIN:
+  BATCH_SIZE_PER_GPU: 60
+  SHUFFLE: false
+  BEGIN_EPOCH: 0
+  END_EPOCH: 30
+  OPTIMIZER: adamw
+  LR: 9e-5
+  LR_FACTOR: 0.5
+  LR_STEP:
+  - 170
+  - 200
+  WD: 0.0001
+  GAMMA1: 0.99
+  GAMMA2: 0.0
+  MOMENTUM: 0.9
+  NESTEROV: false
+ 
+TEST:
+  BATCH_SIZE_PER_GPU: 60
+  MODEL_FILE: 'checkpoints/hrnet_head.pth'
+
